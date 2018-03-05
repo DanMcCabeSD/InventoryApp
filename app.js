@@ -1,3 +1,4 @@
+// these are loading the modules that are in node_modules folder
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// these are loading the routes
 var index = require('./routes/index');
 var users = require('./routes/users');
 
@@ -22,8 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// we are adding routes to express.
 app.use('/', index);
-app.use('/users', users);
+// /people is the base URL for the user's router... to add on after the base URL for endpoints
+app.use('/people', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,4 +47,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+//we are exporting the app, allowing other files to use this express app. i.e. require 
 module.exports = app;
