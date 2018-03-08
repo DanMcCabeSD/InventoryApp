@@ -39,6 +39,4 @@ db.Item.findAll ({
 
 db.Item.findAll ({
     
-})
-
-var jqxhr = .post('')
+});
