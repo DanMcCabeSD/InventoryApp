@@ -100,6 +100,8 @@ const Quagga = require('quagga').default;
 
             Quagga.onDetected(function (result) {
                 console.log("Barcode detected and processed : [" + result.codeResult.code + "]", result);
+                //call Tony's code here
+                
             });
         }
 

@@ -23,7 +23,7 @@ module.exports = function(app) {
 
   app.get("/api/products/:id", function(req, res) {
     // Find one Product with the id in req.params.id and return them to the user with res.json
-   db.Author.findOne({
+   db.Product.findOne({
      where: {
        id: req.params.id
      }
@@ -32,14 +32,28 @@ module.exports = function(app) {
    });
  });
 
+ app.get("/api/products/category/:category", function(req, res)
+ {
+ db.Product.findAll({
+  where:{
+      category: req.params.category
+  }
+}).then(function(dbItem){
+  console.log(dbItem);
+  res.json(dbItem);
+});
+ });
+
+
   // POST route for saving a new product
   app.post("/api/newProduct", function(req, res) {
+    console.log("req ", req.body);
     // create takes an argument of an object describing the item we want to
     // insert into our table. In this case we just we pass in an object with a text
     // and complete property
     db.Product.create({
       UPC: req.body.UPC,
-      image_url: req.body.image,
+      image_url: req.body.image_url,
       brand: req.body.brand,
       name: req.body.name,
       category: req.body.category,

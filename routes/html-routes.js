@@ -1,22 +1,23 @@
-// // *********************************************************************************
-// // html-routes.js - this file offers a set of routes for sending users to the various html pages
-// // *********************************************************************************
+// *********************************************************************************
+// html-routes.js - this file offers a set of routes for sending users to the various html pages
+// *********************************************************************************
 
-// // Dependencies
-// // =============================================================
-// var path = require("path");
+// Dependencies
+// =============================================================
+var path = require("path");
 
 
-// // Routes
-// // =============================================================
-// module.exports = function(app) {
+// Routes
+// =============================================================
+module.exports = function(app) {
 
-//   // Each of the below routes just handles the HTML page that the user gets sent to.
+  // Each of the below routes just handles the HTML page that the user gets sent to.
 
-//   // index route loads view.html
-//   app.get("/", function(req, res) {
-//     res.sendFile(path.join(__dirname, ""));
-//   });
+  // index route loads view.html
+  app.get("/", function(req, res) {
+    // res.sendFile(path.join(__dirname, ""));
+    res.render("webcam");
+  });
 
 //   // add route loads the add.html page,
 //   // where users can enter new products to the db
@@ -30,4 +31,4 @@
 //     res.sendFile(path.join(__dirname, ""));
 //   });
 
-// };
+};

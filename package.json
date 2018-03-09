@@ -14,7 +14,9 @@
     "mysql2": "^1.5.2",
     "sequelize": "^4.35.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "exphbs": "^1.2.0"
+  },
   "keywords": [],
   "description": ""
 }
