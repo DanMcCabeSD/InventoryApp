@@ -18,6 +18,7 @@ module.exports = function(app) {
     db.Product.findAll({}).then(function(dbProducts) {
       // We have access to the products as an argument inside of the callback function
       res.json(dbProducts);
+      console.log(dbProducts);
     });
   });
 

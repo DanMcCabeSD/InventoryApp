@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<title>Barcode Scanner App</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+
+    <style>html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
+</style>
+    <style>
+        /* In order to place the tracking correctly */
+        canvas.drawing,
+        canvas.drawingBuffer {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body class="w3-light-grey">
+
+<!-- Page Container -->
+<div class="w3-content w3-margin-top" style="max-width:1400px;"></div>
+
+    <!-- The Grid -->
+    <div class="w3-row-padding">
+
+        <!-- Left Column -->
+        <div class="w3-third">
+
+            <div class="w3-white w3-text-grey w3-card-4">
+                <div class="w3-display-container">
+                    <div class="w3-display-bottomleft w3-container w3-text-black">
+                        <h2>Inventory App</h2>
+                    </div>
+                </div>
+                <div class="w3-container">
+                <!-- Div to show the scanner -->
+                <div id="scanner-container" style="text-align:center;"></div>
+                <input type="button" id="btn" value="Start/Stop the scanner" style="align:center;"/>
+    
+                <!-- Include the image-diff library -->
+                <script src="assets/js/quagga.min.js"></script>
+                <script>
+                    var _scannerIsRunning = false;
+
+                    function startScanner() {
+                        Quagga.init({
+                            inputStream: {
+                                name: "Live",
+                                type: "LiveStream", // Or '#yourElement' (optional) target: document.querySelector('#yourElement')
+                                target: document.querySelector('#scanner-container'),
+                                constraints: {
+                                    width: 300,
+                                    height: 250,
+                                    facingMode: "enviornment"
+                                },
+                            },
+                            decoder: {
+                                readers: [
+                                    "upc_reader", "upc_e_reader"
+                                ],
+                                debug: {
+                                    showcanvas: true,
+                                    showPatches: true,
+                                    showFoundPatches: true,
+                                    showSkeleton: true,
+                                    showLabels: true,
+                                    showPatchLabels: true,
+                                    showRemainingPatchLabels: true,
+                                    boxFromPatches: {
+                                        showTransformed: true,
+                                        showTransformedBox: true,
+                                        showBB: true
+                                    }
+                                }
+                            },
+
+                        }, function (err) {
+                            if (err) {
+                                console.log(err);
+                                return
+                            }
+
+                            console.log("Initialization finished. Ready to start ");
+                            Quagga.start();
+
+                            //Set flag to is running
+
+                            _scannerIsRunning = true;
+
+                        });
+
+                        Quagga.onProcessed(function (result) {
+                            var drawingCtx = Quagga.canvas.ctx.overlay,
+                                drawingCanvas = Quagga.canvas.dom.overlay;
+
+                            if (result) {
+                                if (result.boxes) {
+                                    drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+                                    result.boxes.filter(function (box) {
+                                        return box !== result.box;
+                                    }).forEach(function (box) {
+                                        Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
+                                    });
+                                }
+
+                                if (result.box) {
+                                    Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
+                                }
+
+                                if (result.codeResult && result.codeResult.code) {
+                                    Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
+                                }
+                            }
+                        });
+                        Quagga.onDetected(function (result) {
+                            console.log("Barcode detected and processed : [" + result.codeResult.code + "]", result);
+                        });
+                    }
+
+                    // Start/stop scanner
+                    document.getElementById("btn").addEventListener("click", function () {
+                        if (_scannerIsRunning) {
+                            Quagga.stop();
+                        } else {
+                            startScanner();
+                        }
+                    }, false);
+                </script>
+                    <p>
+                        <div id="showResults"> Results shown here</div>
+                        <!-- <input id="quantity" name="quantity" type="text" value="0"> -->
+                        <!-- <button id="quantity_btn">Submit</button> -->
+                    <hr>
+
+                            <p class="w3-large">
+                                <b>
+                                    <i class="fa fa-asterisk fa-fw w3-margin-right w3-text-teal"></i>Product Information</b>
+                            </p>
+
+                            <div>
+                                <p id="image-box"></p>
+                            </div>
+                            <p id="UPC">UPC: </p>
+                            <!-- <div class="w3-light-grey w3-round-xlarge w3-small">
+                                <div class="w3-container w3-center w3-round-xlarge w3-teal" style="width:90%">90%</div>
+                            </div> -->
+                            <p id="brand">Brand: </p>
+                            <!-- <div class="w3-light-grey w3-round-xlarge w3-small">
+                                <div class="w3-container w3-center w3-round-xlarge w3-teal" style="width:80%">
+                                    <div class="w3-center w3-text-white">80%</div>
+                                </div>
+                            </div> -->
+                            <p id="name">Product Name: </p>
+                            <!-- <div class="w3-light-grey w3-round-xlarge w3-small">
+                                <div class="w3-container w3-center w3-round-xlarge w3-teal" style="width:75%">75%</div>
+                            </div> -->
+                            <p id="category">Category: </p>
+                            <!-- <div class="w3-light-grey w3-round-xlarge w3-small">
+                                <div class="w3-container w3-center w3-round-xlarge w3-teal" style="width:50%">50%</div>
+                            </div> -->
+                            <br>
+                            
+                            <!-- <p class="w3-large w3-text-theme">
+                                <b>
+                                    <i class="fa fa-globe fa-fw w3-margin-right w3-text-teal"></i>Languages</b>
+                            </p>
+                            <p>English</p>
+                            <div class="w3-light-grey w3-round-xlarge">
+                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:100%"></div>
+                            </div>
+                            <p>Spanish</p>
+                            <div class="w3-light-grey w3-round-xlarge">
+                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:55%"></div>
+                            </div>
+                            <p>German</p>
+                            <div class="w3-light-grey w3-round-xlarge">
+                                <div class="w3-round-xlarge w3-teal" style="height:24px;width:25%"></div> -->
+                            <!-- </div> -->
+                            <br>
+                            </div>
+                            </div>
+                            <br>
+                            
+                            <!-- End Left Column -->
+                            </div>
+                            <!-- Right Column -->
+<div class="w3-twothird">
+
+    <div class="w3-container w3-card w3-white w3-margin-bottom">
+        <h2 class="w3-text-grey w3-padding-16">
+            <i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Inventory Summary</h2>
+        <div class="w3-container">
+            <h5 class="w3-opacity">
+                    <canvas id="myChart" width="300" height="200"></canvas>
+                <!-- <b><canvas id="myChart" width="400" height="400"></canvas>
+                <script>
+                    var ctx = document.getElementById("myChart").getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                            datasets: [{
+                                label: '# of Votes',
+                                data: [12, 19, 3, 5, 2, 3],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                </script></b> -->
+            <!-- </h5>
+            <h6 class="w3-text-teal">
+                <i class="fa fa-calendar fa-fw w3-margin-right"></i>Jan 2015 -
+                <span class="w3-tag w3-teal w3-round">Current</span>
+            </h6>
+            <p>Lorem ipsum dolor sit amet. Praesentium magnam consectetur vel in deserunt aspernatur est reprehenderit sunt
+                hic. Nulla tempora soluta ea et odio, unde doloremque repellendus iure, iste.</p>
+            <hr>
+        </div>
+        <div class="w3-container">
+            <h5 class="w3-opacity">
+                <b>Random Info</b>
+            </h5>
+            <h6 class="w3-text-teal">
+                <i class="fa-fw w3-margin-right"></i>Mar 2012 - Dec 2014</h6>
+            <p>Consectetur adipisicing elit. Praesentium magnam consectetur vel in deserunt aspernatur est reprehenderit sunt
+                hic. Nulla tempora soluta ea et odio, unde doloremque repellendus iure, iste.</p>
+            <hr>
+        </div>
+        <div class="w3-container">
+            <h5 class="w3-opacity">
+                <b>Graphic Designer / designsomething.com</b>
+            </h5>
+            <h6 class="w3-text-teal">
+                <i class="fa fa-calendar fa-fw w3-margin-right"></i>Jun 2010 - Mar 2012</h6>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+            <br>
+        </div> -->
+    </div>
+
+
+    <!-- End Right Column -->
+</div>
+
+<!-- End Grid -->
+</div>
+
+<!-- End Page Container -->
+</div>
+
+<footer class="w3-container w3-teal w3-center w3-margin-top">
+    <p>Powered by
+        <a href="" target="_blank">Scanning App</a>
+    </p>
+</footer>
+
+</body>
+
+</html>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function dummyData(UPC, brand, name, image_url, category){
+
+            var image = "<p><img src='"+image_url+"'/></p>";
+            var UPC = UPC;
+            var brand = brand;
+            var name = name;
+            var category = category;
+
+
+            var qtyInputBox = $("<input type='text' value='' />")
+                            .attr("id", "quantityInput")
+                            .attr("name", "inputField")
+                            .appendTo("#scan-results");
+            //quantityInput.
+
+            var addbtn = $('<input type="button" value="Add" id="addbtn" />');
+            addbtn.appendTo($("#scan-results"));
+
+            
+            $("#image-box").append(image);
+            $("#UPC").append(UPC);
+            $("#brand").append(brand);
+            $("#name").append(name);
+            $("#category").append(category);
+
+            // $("#scan-results").append(qtyInputBox);
+            // $("#scan-results").append(addbtn);
+            };
+
+            //setTimeout(function(){ alert("Hello"); }, 3000);
+            setTimeout(function(){ dummyData("12312441244","coca-cola", "Coca-Cola Classic","data:image/jpeg;base64,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", "Beverage");    }, 10000);
+    
+    
+            
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script>
+            setTimeout(function(){ 
+            var ctx = document.getElementById("myChart");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Coco-Cola Classic", "Sprite", "Dr. Pepper", "RedBull", "Apple Juice", "Fanta"],
+                    datasets: [{
+                        label: 'Quantity',
+                        data: [16, 4, 12, 13, 12, 8],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            }, 10000);
+    
+     </script>
+
+
+</body>
+</html>
