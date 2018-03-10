@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -127,23 +128,37 @@
         html += "<p>UPC: "+name+"</p>";
         html += "<p><img src='"+image_url+"'/></p>";
 
-        var qtyInput = $("<input type='text' value='' />")
-                        .attr("id", "myfieldid")
-                        .attr("name", "myfieldid")
+        var qtyInputBox = $("<input type='text' value='' />")
+                        .attr("id", "quantityInput")
+                        .attr("name", "inputField")
                         .appendTo("#scan-results");
         //quantityInput.
 
-        var addbtn = $('<input type="button" value="Add" />');
+        var addbtn = $('<input type="button" value="Add" id="addbtn" />');
         addbtn.appendTo($("#scan-results"));
 
         $("#scan-results").append(html);
 
-        $("#scan-results").append(qtyInput);
+        $("#scan-results").append(qtyInputBox);
         $("#scan-results").append(addbtn);
         };
 
     //setTimeout(function(){ alert("Hello"); }, 3000);
-    setTimeout(function(){ dummyData("12312441244","coca-cola", "Coca-Cola Classic","https://www.magictricks.com/assets/images/trickspix/airbornecokecan2.jpg" );    }, 10000);
+    setTimeout(function(){ dummyData("12312441244","coca-cola", "Coca-Cola Classic","https://www.magictricks.com/assets/images/trickspix/airbornecokecan2.jpg" );    }, 1000);
+
+    //var quantityInput = $("#quantityInput");
+    //function getQuantity() {
+    //    $.get("api/products", function(data) {
+    //        var rowsToAdd = [];
+    //        for (var i = 0; i < data.length; i++) {
+    //            rowsToAdd.push(createAuthorRow(data[i]));
+     //       }
+     //       renderAuthorList(rowsToAdd);
+     //       quantityInput.val("");
+    //    });
+    //}
+
+    
 </script>
 </body>
 
